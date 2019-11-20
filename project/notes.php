@@ -39,8 +39,8 @@
 	 <?php 
 
 	 	// GET CURRENT PAGE number
-	  if(isset($_GET['pageno'])){
-	  	$pageno = $_GET['pageno'];
+	  if(isset($_GET['p'])){
+	  	$pageno = $_GET['p'];
 	  } else {
 	  	$pageno = 1;
 	  }
@@ -218,6 +218,16 @@
 		</div> 
 	</section>
 	<section class="header">
+		<?php 
+			$user_id = $_SESSION['id'];
+			$c_query ="SELECT * FROM notes WHERE user_id = '$user_id'";
+			$check_query = mysqli_query($connection, $c_query);
+
+			confirmQuery($check_query);
+			if(mysqli_num_rows($check_query) == 0){
+				echo "No records yet";
+			} else {
+		 ?>
 		<div class="header-topic container-fluid">
 			<p>NOTES(click to edit or delete)</p>
 		</div>
@@ -293,6 +303,7 @@
 			<li class="float-left"><a href="notes.php?p=<?php echo $pageno-1; ?>">Previous</a></li>
 			<?php endif; ?>
 		</ul>
+	<?php } ?>
 	</section>
 			
 	</section>
