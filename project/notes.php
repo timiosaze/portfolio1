@@ -36,24 +36,7 @@
 			}
 		}
 	 ?>
-	 <?php 
-
-	 	// GET CURRENT PAGE number
-	  if(isset($_GET['p'])){
-	  	$pageno = $_GET['p'];
-	  } else {
-	  	$pageno = 1;
-	  }
-
-	  // FORMULA FOR PAGINATION
-	  $no_of_records_per_page = 5;
-	  $offset = ($pageno-1) * $no_of_records_per_page;
-
-	  //GET THE TOTAL NUMBER OF PAGES
-	  $total_pages_sql = "SELECT COUNT(*) FROM notes WHERE "
-
-
-	  ?>
+	 
 <!DOCTYPE html>
 <html>
 <head>
@@ -139,19 +122,26 @@
 <body>
 	<?php 
 		if(isset($_POST['submit'])){
-			$user_id = $_SESSION['id'];
-			$note = escape($_POST['note']);
+			if(empty(trim($_POST['note']))){
+				$_SESSION['alert-danger'] = "Not saved field are not filled";
 
-
-			$query = "INSERT INTO notes (user_id, note, created_at) ";
-			$query .= "VALUES ('{$user_id}', '{$note}', now())";
-			$insert_query = mysqli_query($connection, $query);
-
-			if($insert_query){
-				$_SESSION['alert-success'] = "Note was successfully saved";
 			} else {
-				$_SESSION['alert-danger'] = "Note was not saved";
+
+				$user_id = $_SESSION['id'];
+				$note = escape($_POST['note']);
+
+
+				$query = "INSERT INTO notes (user_id, note, created_at) ";
+				$query .= "VALUES ('{$user_id}', '{$note}', now())";
+				$insert_query = mysqli_query($connection, $query);
+
+				if($insert_query){
+					$_SESSION['alert-success'] = "Note was successfully saved";
+				} else {
+					$_SESSION['alert-danger'] = "Note was not saved";
+				}
 			}
+
 		}
 	 ?>
 	<nav class="navbar navbar-expand-lg navbar-light bg-white">

@@ -40,19 +40,23 @@ if(isset($_GET['del_contact_id'])){
 ?>
 <?php 
 	if(isset($_POST['save_contact'])){
-		$user_id = $_SESSION['id'];
-		$contact_name = escape($_POST['contact_name']);
-		$contact_number = escape($_POST['contact_number']);
+		if(empty(trim($_POST['contact_name'])) || empty($_POST['contact_number'])){
+			$_SESSION['alert-danger'] ="Not saved fields are not filled";
+		} else {
+			$user_id = $_SESSION['id'];
+			$contact_name = escape($_POST['contact_name']);
+			$contact_number = escape($_POST['contact_number']);
 
-		$query = "INSERT INTO contacts (contact_name, contact_number, user_id) ";
-		$query .= "VALUES ('{$contact_name}', '{$contact_number}', '{$user_id}') ";
-		$insert_query = mysqli_query($connection, $query);
+			$query = "INSERT INTO contacts (contact_name, contact_number, user_id) ";
+			$query .= "VALUES ('{$contact_name}', '{$contact_number}', '{$user_id}') ";
+			$insert_query = mysqli_query($connection, $query);
 
-		confirmQuery($insert_query);
-		if($insert_query){
-			$_SESSION['alert-success'] = "Contact was successfully saved";
-		}else {
-			$_SESSION['alert-danger'] ="Contact was not saved";
+			confirmQuery($insert_query);
+			if($insert_query){
+				$_SESSION['alert-success'] = "Contact was successfully saved";
+			}else {
+				$_SESSION['alert-danger'] ="Contact was not saved";
+			}
 		}
 	}
 
@@ -251,7 +255,7 @@ if(isset($_GET['del_contact_id'])){
 			$no_of_rows = mysqli_fetch_array($pages_sql)[0];
 			$total_pages = ceil($no_of_rows / $no_of_records_per_page);
 
-			$s_query = "SELECT * FROM contacts WHERE user_id = '$user_id' ORDER BY contact_name DESC LIMIT $offset, $no_of_records_per_page";
+			$s_query = "SELECT * FROM contacts WHERE user_id = '$user_id' ORDER BY contact_name ASC LIMIT $offset, $no_of_records_per_page";
 			$select_query = mysqli_query($connection, $s_query);
 			confirmQuery($select_query);
 
