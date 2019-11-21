@@ -68,7 +68,7 @@
 				<div class="red col-lg-3 col-md-6 col-sm-12 col-xs-12">
 					<a href="project/appointments.php?link=appointment">
 						<div class="project ">
-							<p>A <br> Day2Day Meeting App</p>
+							<p>A <br> Simple Meeting App</p>
 						</div>	
 					</a>
 				</div>

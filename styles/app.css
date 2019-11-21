@@ -275,13 +275,27 @@ label {
 .col .delete-form a {
   color: #db2e1f;
 }
-.appoint_time, .appoint_title {
+.appoint_title {
   padding-top: 10px;
-  text-align: center;
 }
 .appoint_time {
   font-weight: 700;
   color: #3828e0;
+  padding-bottom: -10px;
+    vertical-align: bottom;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.appoint_date {
+  font-weight: 300;
+  color: #6f6f6f;
+  font-size: 0.7em;
+  padding: 0;
+  text-align: center;
+}
+.time_date {
+  padding: 0 !important;
 }
 .image_gal {
   height: 250px;
@@ -290,6 +304,7 @@ label {
   position: relative;
   cursor: pointer;
 }
+
 .image_gal img {
   position: absolute;
   top:0;

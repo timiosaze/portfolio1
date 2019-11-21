@@ -23,7 +23,8 @@
 	<title>Appointments App | Adegbulugbe Timilehin</title>
 	<link rel="stylesheet" type="text/css" href="../bootstrapv4/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="../fonts/css/all.css">
-	<link rel="stylesheet" type="text/css" href="../clockpicker-gh-pages/dist/bootstrap-clockpicker.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="../clockpicker-gh-pages/dist/bootstrap-clockpicker.min.css"> -->
 	<link rel="stylesheet" type="text/css" href="../styles/app.css">
 	<!-- <style type="text/css">
 		.header {
@@ -167,26 +168,113 @@
 			<p>New Appointment</p>
 		</div>
 		<div class="post">
-			<form class="container-fluid">
+			<?php if(isset($_POST['submit'])){
+						if(empty(trim($_POST['meeting'])) || empty(trim($_POST['meeting_date']))){
+							$_SESSION['alert-danger'] = "Not saved, fields are not filled";
+						} else {
+							$user_id = $_SESSION['id'];
+							$meeting = escape($_POST['meeting']);
+							$meeting_date = escape($_POST['meeting_date']);
+
+							$query = "INSERT INTO meetings (user_id, meeting, meeting_date) ";
+							$query .= "VALUES ('{$user_id}', '{$meeting}', '{$meeting_date}')";
+							$insert_query = mysqli_query($connection, $query);
+
+							confirmQuery($insert_query);
+							if($insert_query){
+								$_SESSION['alert-success'] = "Meeting was successfully saved";
+							} else {
+								$_SESSION['alert-danger'] = "Meeting was not saved";
+							}
+						}
+					} 
+			?>
+			<form class="container-fluid" method="post" enctype="multipart/form-data">
+				<?php 
+					if(isset($_SESSION['alert-success'])){
+						echo "<div class='alert alert-success' role='alert'>". $_SESSION['alert-success'] . "</div>";
+						unset($_SESSION['alert-success']);
+					} elseif(isset($_SESSION['alert-danger'])){
+						echo "<div class='alert alert-danger' role='alert'>". $_SESSION['alert-danger'] . "</div>";
+						unset($_SESSION['alert-danger']);
+					}
+				 ?>
 				<div class="form-group">
 				    <label for="exampleFormControlTextarea1">Appointment</label>
-				    <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="New Meeting" rows="3"></textarea>
+				    <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="New Meeting" rows="3" name="meeting"></textarea>
 				</div>
-				<div class="form-group clockpicker">
-				    <label for="exampleFormControlTextarea1">Appointment Time</label>
-				    <input type="text" class="form-control" value="09:30">
+				<div class="form-group">
+				    <label >Appointment Time</label>
+				    <input type="text" class="form-control clockpicker" name="meeting_date">
 				    <span class="input-group-addon">
 				        <span class="glyphicon glyphicon-time"></span>
 				    </span>
 				</div>
-				<button type="submit" class="btn btn-dark">Submit</button>
+				<button type="submit" class="btn btn-dark"  name="submit">Submit</button>
 			</form>
 		</div> 
 	</section>
 	<section class="header">
+		<?php 
+			$user_id = $_SESSION['id'];
+			$c_query ="SELECT * FROM meetings WHERE user_id = '$user_id'";
+			$check_row = mysqli_query($connection, $c_query);
+
+			confirmQuery($check_row);
+			if(mysqli_num_rows($check_row) == 0){
+				echo "No meetings set";
+			} else {
+		 ?>
 		<div class="header-topic container-fluid">
 			<p>APPOINTMENTS(click to edit or delete)</p>
 		</div>
+		<?php 
+			$select_row = mysqli_query($connection, $c_query);
+
+			confirmQuery($select_row);
+			while($row = mysqli_fetch_assoc($select_row)){
+				$meeting = $row['meeting'];
+				$meeting_date = $row['meeting_date'];
+		 ?>
+		<div class="element-group">
+			<div class="element">
+				<div class="container">
+					<div class="row">
+						<div class="col-10 appoint_title">
+							<p> <?php echo $meeting; ?></p>
+						</div>
+						<div class="col-2 time_date">
+							<div class="col appoint_time">
+								<p><?php echo date("g:ia", strtotime($meeting_date)); ?></p>
+							</div>
+							<div class="col appoint_date">
+								<p><?php echo date("M d, Y", strtotime($meeting_date)); ?></p>	
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="container actions">
+				<div class="row inside-container">
+					<div class="col">
+						<form id="editForm" class="edit-form">
+							<!-- <span class="time">11:34pm</span> -->
+							<a href="javascript:{}" onclick="document.getElementById('editForm').submit();">EDIT</a>
+							<!-- <button type="button" class="btn btn-secondary btn-sm">Edit</button>	 -->
+						</form>
+					</div>
+					<div class="col">
+						<form id="editForm" class="delete-form">
+							<!-- <span class="time">11:34pm</span> -->
+							<a href="javascript:{}" onclick="document.getElementById('editForm').submit();">DELETE</a>
+							<!-- <button type="button" class="btn btn-secondary btn-sm">Edit</button>	 -->
+						</form>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	<?php } ?>
 		<div class="element-group">
 			<div class="element">
 				<div class="container">
@@ -194,8 +282,13 @@
 						<div class="col-10 appoint_title">
 							<p> Meet Dangote at Hilton HotelMeet Dangote at Hilton HotelMeet Dangote at Hilton Hotel</p>
 						</div>
-						<div class="col-2 appoint_time">
-							<p>11:50pm</p>
+						<div class="col-2 time_date">
+							<div class="col appoint_time">
+								<p>11:50pm</p>
+							</div>
+							<div class="col appoint_date">
+								<p>Oct 10, 2019</p>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -227,8 +320,13 @@
 						<div class="col-10 appoint_title">
 							<p> Meet Dangote at Hilton HotelMeet Dangote at Hilton HotelMeet Dangote at Hilton Hotel</p>
 						</div>
-						<div class="col-2 appoint_time">
-							<p>11:50pm</p>
+						<div class="col-2 time_date">
+							<div class="col appoint_time">
+								<p>11:50pm</p>
+							</div>
+							<div class="col appoint_date">
+								<p>Oct 10, 2019</p>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -253,50 +351,24 @@
 			</div>
 
 		</div>
-		<div class="element-group">
-			<div class="element">
-				<div class="container">
-					<div class="row">
-						<div class="col-10 appoint_title">
-							<p> Meet Dangote at Hilton HotelMeet Dangote at Hilton HotelMeet Dangote at Hilton Hotel</p>
-						</div>
-						<div class="col-2 appoint_time">
-							<p>11:50pm</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="container actions">
-				<div class="row inside-container">
-					<div class="col">
-						<form id="editForm" class="edit-form">
-							<!-- <span class="time">11:34pm</span> -->
-							<a href="javascript:{}" onclick="document.getElementById('editForm').submit();">EDIT</a>
-							<!-- <button type="button" class="btn btn-secondary btn-sm">Edit</button>	 -->
-						</form>
-					</div>
-					<div class="col">
-						<form id="editForm" class="delete-form">
-							<!-- <span class="time">11:34pm</span> -->
-							<a href="javascript:{}" onclick="document.getElementById('editForm').submit();">DELETE</a>
-							<!-- <button type="button" class="btn btn-secondary btn-sm">Edit</button>	 -->
-						</form>
-					</div>
-				</div>
-			</div>
-
-		</div>
+	<?php } ?>
 	</section>
 	
 	</section>
 </body>
 <script type="text/javascript" src="../jquery-3.4.1.min.js"></script>
 <script type="text/javascript" src="../bootstrapv4/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <!-- ClockPicker script -->
-<script type="text/javascript" src="../clockpicker-gh-pages/dist/bootstrap-clockpicker.min.js"></script>
+<!-- <script type="text/javascript" src="../clockpicker-gh-pages/dist/bootstrap-clockpicker.min.js"></script> -->
 <script type="text/javascript" src="../scripts/script.js"></script>
 <script type="text/javascript">
-$('.clockpicker').clockpicker();
+$('.clockpicker').flatpickr({
+	enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    minDate: "today"
+});
 </script>
 
 </html>
