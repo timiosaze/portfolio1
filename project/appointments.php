@@ -233,9 +233,28 @@
 		</div> 
 	</section>
 	<section class="header">
-		<?php 
+		<?php
+
 			$user_id = $_SESSION['id'];
-			$c_query ="SELECT * FROM meetings WHERE user_id = '$user_id' ORDER BY meeting_date DESC";
+			//GET THE CURRENT PAGE
+			if(isset($_GET['p'])){
+				$pageno = $_GET['p'];
+			}else {
+				$pageno = 1;
+			}
+
+			//FORMULA FOR PAGINATION 
+			$no_of_records_per_page = 5;
+			$offset = ($pageno -1) * $no_of_records_per_page;
+
+			//GET THE TOTAL NUMBER OF PAGES
+			$total_pages_sql = "SELECT COUNT(*) FROM meetings WHERE user_id = '$user_id'";
+			$pages_result = mysqli_query($connection, $total_pages_sql);
+			$total_row = mysqli_fetch_array($pages_result)[0];
+			$total_pages = ceil($total_row/$no_of_records_per_page);
+
+
+			$c_query ="SELECT * FROM meetings WHERE user_id = '$user_id' ORDER BY meeting_date DESC LIMIT $offset, $no_of_records_per_page";
 			$check_row = mysqli_query($connection, $c_query);
 
 			confirmQuery($check_row);
@@ -294,8 +313,18 @@
 
 		</div>
 	<?php } ?>
-		
-		
+		<ul class="pagina">
+			<?php if($pageno<=1 && $total_pages==1): ?>
+
+			<?php elseif($pageno<=1 && $total_pages>1): ?>
+			<li class="float-right"><a href="appointments.php?p=<?php echo $pageno+1; ?>">Next</a></li>
+			<?php elseif($pageno != $total_pages): ?>
+			<li class="float-left"><a href="appointments.php?p=<?php echo $pageno-1; ?>">Previous</a></li>
+			<li class="float-right"><a href="appointments.php?p=<?php echo $pageno+1; ?>">Next</a></li>
+			<?php elseif($pageno == $total_pages): ?>
+			<li class="float-left"><a href="appointments.php?p=<?php echo $pageno-1; ?>">Previous</a></li>
+			<?php endif; ?>
+		</ul>
 	<?php } ?>
 	</section>
 	
