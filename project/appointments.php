@@ -17,6 +17,24 @@
 			redirect("../auth/login.php");
 		}
 ?>
+<?php 
+	if(isset($_GET['del_id'])){
+		$id = $_GET['del_id'];
+		$query = "DELETE FROM meetings WHERE id = '$id' LIMIT 1";
+		$delete_query = mysqli_query($connection, $query);
+		confirmQuery($delete_query);
+		if($delete_query){
+			$_SESSION['alert-success'] = "Meeting successfully deleted";
+			redirect("appointments.php");
+			exit();
+		} else {
+			$_SESSION['alert-danger'] = "Meeting not deleted";
+			redirect("appointments.php");
+			exit();
+		}
+
+	}	
+ ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -217,7 +235,7 @@
 	<section class="header">
 		<?php 
 			$user_id = $_SESSION['id'];
-			$c_query ="SELECT * FROM meetings WHERE user_id = '$user_id'";
+			$c_query ="SELECT * FROM meetings WHERE user_id = '$user_id' ORDER BY meeting_date DESC";
 			$check_row = mysqli_query($connection, $c_query);
 
 			confirmQuery($check_row);
@@ -233,6 +251,7 @@
 
 			confirmQuery($select_row);
 			while($row = mysqli_fetch_assoc($select_row)){
+				$id = $row['id'];
 				$meeting = $row['meeting'];
 				$meeting_date = $row['meeting_date'];
 		 ?>
@@ -259,14 +278,14 @@
 					<div class="col">
 						<form id="editForm" class="edit-form">
 							<!-- <span class="time">11:34pm</span> -->
-							<a href="javascript:{}" onclick="document.getElementById('editForm').submit();">EDIT</a>
+							<a href="edit_appoint.php?a_id=<?php echo $id; ?>">EDIT</a>
 							<!-- <button type="button" class="btn btn-secondary btn-sm">Edit</button>	 -->
 						</form>
 					</div>
 					<div class="col">
 						<form id="editForm" class="delete-form">
 							<!-- <span class="time">11:34pm</span> -->
-							<a href="javascript:{}" onclick="document.getElementById('editForm').submit();">DELETE</a>
+							<a href="appointments.php?del_id=<?php echo $id; ?>">DELETE</a>
 							<!-- <button type="button" class="btn btn-secondary btn-sm">Edit</button>	 -->
 						</form>
 					</div>
@@ -275,82 +294,8 @@
 
 		</div>
 	<?php } ?>
-		<div class="element-group">
-			<div class="element">
-				<div class="container">
-					<div class="row">
-						<div class="col-10 appoint_title">
-							<p> Meet Dangote at Hilton HotelMeet Dangote at Hilton HotelMeet Dangote at Hilton Hotel</p>
-						</div>
-						<div class="col-2 time_date">
-							<div class="col appoint_time">
-								<p>11:50pm</p>
-							</div>
-							<div class="col appoint_date">
-								<p>Oct 10, 2019</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="container actions">
-				<div class="row inside-container">
-					<div class="col">
-						<form id="editForm" class="edit-form">
-							<!-- <span class="time">11:34pm</span> -->
-							<a href="javascript:{}" onclick="document.getElementById('editForm').submit();">EDIT</a>
-							<!-- <button type="button" class="btn btn-secondary btn-sm">Edit</button>	 -->
-						</form>
-					</div>
-					<div class="col">
-						<form id="editForm" class="delete-form">
-							<!-- <span class="time">11:34pm</span> -->
-							<a href="javascript:{}" onclick="document.getElementById('editForm').submit();">DELETE</a>
-							<!-- <button type="button" class="btn btn-secondary btn-sm">Edit</button>	 -->
-						</form>
-					</div>
-				</div>
-			</div>
-
-		</div>
-		<div class="element-group">
-			<div class="element">
-				<div class="container">
-					<div class="row">
-						<div class="col-10 appoint_title">
-							<p> Meet Dangote at Hilton HotelMeet Dangote at Hilton HotelMeet Dangote at Hilton Hotel</p>
-						</div>
-						<div class="col-2 time_date">
-							<div class="col appoint_time">
-								<p>11:50pm</p>
-							</div>
-							<div class="col appoint_date">
-								<p>Oct 10, 2019</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="container actions">
-				<div class="row inside-container">
-					<div class="col">
-						<form id="editForm" class="edit-form">
-							<!-- <span class="time">11:34pm</span> -->
-							<a href="javascript:{}" onclick="document.getElementById('editForm').submit();">EDIT</a>
-							<!-- <button type="button" class="btn btn-secondary btn-sm">Edit</button>	 -->
-						</form>
-					</div>
-					<div class="col">
-						<form id="editForm" class="delete-form">
-							<!-- <span class="time">11:34pm</span> -->
-							<a href="javascript:{}" onclick="document.getElementById('editForm').submit();">DELETE</a>
-							<!-- <button type="button" class="btn btn-secondary btn-sm">Edit</button>	 -->
-						</form>
-					</div>
-				</div>
-			</div>
-
-		</div>
+		
+		
 	<?php } ?>
 	</section>
 	

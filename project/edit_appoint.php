@@ -17,12 +17,15 @@
 			redirect("../auth/login.php");
 		}
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Notes App | Adegbulugbe Timilehin</title>
+	<title>Appointments App | Adegbulugbe Timilehin</title>
 	<link rel="stylesheet" type="text/css" href="../bootstrapv4/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="../fonts/css/all.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="../clockpicker-gh-pages/dist/bootstrap-clockpicker.min.css"> -->
 	<link rel="stylesheet" type="text/css" href="../styles/app.css">
 	<!-- <style type="text/css">
 		.header {
@@ -90,6 +93,21 @@
 			font-style: normal;
 			font-weight: 600;
 		}
+		.contact_name, .contact_number {
+			text-align: center;
+			line-height: 25px;
+			height: 25px;
+			font-size: 1.15em;
+			font-family: 'Open Sans';
+			font-style: normal;
+		}
+		.contact_name {
+			font-weight: 300;
+			color:#3828e0;
+		}
+		.contact_number {
+			font-weight: 600;
+		}
 		.col .edit-form a {
 			color: #3828e0;
 
@@ -97,40 +115,17 @@
 		.col .delete-form a {
 			color: #db2e1f;
 		}
+		.appoint_time, .appoint_title {
+			padding-top: 10px;
+			text-align: center;
+		}
+		.appoint_time {
+			font-weight: 700;
+			color: #3828e0;
+		}
 	</style> -->
 </head>
 <body>
-	<?php 
-		if(isset($_GET['n_id'])){
-			$the_note_id = escape($_GET['n_id']);
-		}
-		
-		if(isset($_POST['update'])){
-			if(empty(trim($_POST['note']))){
-				$_SESSION['alert-danger'] = "Note field empty";
-			}else {
-			$user_id = $_SESSION['id'];
-			$note = escape($_POST['note']);
-
-			$query = "UPDATE notes SET ";
-			$query .= "note = '{$note}' ";
-			$query .= "WHERE id = '{$the_note_id}'";
-
-			
-			$update_query = mysqli_query($connection, $query);
-
-			if($update_query){
-				$_SESSION['alert-success'] = "Note was successfully updated";
-				redirect('notes.php');
-				exit();
-			} else {
-				$_SESSION['alert-danger'] = "Note was not updated";
-				redirect('notes.php');
-				exit();
-			}
-		}
-	}
-	 ?>
 	<nav class="navbar navbar-expand-lg navbar-light bg-white">
 	 <div class="container">
 	  <a class="navbar-brand" href="#">PORTFOLIO</a>
@@ -138,9 +133,8 @@
 	    <span class="navbar-toggler-icon"></span>
 	  </button>
 	  <div class="collapse navbar-collapse" id="navbarNav">
-	  	<ul class="navbar-nav ml-auto">
-
-	  	<?php if(isset($_SESSION['username'])): ?>
+	    <ul class="navbar-nav ml-auto">
+	      <?php if(isset($_SESSION['username'])): ?>
 	  	  <li class="nav-item dropdown">
 	        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 	          <?php echo ucfirst($_SESSION['username']); ?>
@@ -164,7 +158,7 @@
 		        <a class="nav-link disabled" href="#">Disabled</a>
 		      </li> -->
 		<?php endif; ?>
-		    </ul>
+	    </ul>
 	  </div>
 	  </div>
 	</nav>
@@ -172,26 +166,38 @@
 		
 	<section class="header">
 		<div class="header-topic container-fluid">
-			<p>Add New Note</p>
+			<p>New Appointment</p>
 		</div>
 		<div class="post">
+			<?php if(isset($_POST['update'])){
+						if(empty(trim($_POST['meeting'])) || empty(trim($_POST['meeting_date']))){
+							$_SESSION['alert-danger'] = "Not saved, fields are not filled";
+						} else {
+							$id = $_GET['a_id'];
+							$meeting = escape($_POST['meeting']);
+							$meeting_date = escape($_POST['meeting_date']);
 
-			<?php 
-					if(isset($_GET['n_id'])){
-						$the_note_id = escape($_GET['n_id']);
-					}
+							$query = "UPDATE meetings SET ";
+							$query .= "meeting = '{$meeting}', ";
+							$query .= "meeting_date = '{$meeting_date}' ";
+							$query .= "WHERE id = '$id'";
 
-					$user_id = $_SESSION['id'];
-					$query = "SELECT * FROM notes WHERE id = '$the_note_id'";
+							$edit_query = mysqli_query($connection, $query);
 
-					$select_all_query = mysqli_query($connection, $query);
-
-					while($row = mysqli_fetch_assoc($select_all_query)){
-						$note = $row['note'];
-						$updated_at = $row['updated_at'];
-					}
+							confirmQuery($edit_query);
+							if($edit_query){
+								$_SESSION['alert-success'] = "Meeting successfully updated";
+								redirect("appointments.php");
+								exit();
+							} else {
+								$_SESSION['alert-danger'] = "Meeting not updated";
+								redirect("appointments.php");
+								exit();
+							}
+						}
+					} 
 			?>
-			<form  method="post" class="container-fluid" enctype="multipart/form-data">
+			<form class="container-fluid" method="post" enctype="multipart/form-data">
 				<?php 
 					if(isset($_SESSION['alert-success'])){
 						echo "<div class='alert alert-success' role='alert'>". $_SESSION['alert-success'] . "</div>";
@@ -201,19 +207,55 @@
 						unset($_SESSION['alert-danger']);
 					}
 				 ?>
+				<?php 
+					if(isset($_GET['a_id'])){
+						$id = $_GET['a_id'];
+
+						$query = "SELECT * FROM meetings WHERE id = '$id' LIMIT 1";
+						$update_query = mysqli_query($connection, $query);
+
+						confirmQuery($update_query);
+						while($row = mysqli_fetch_assoc($update_query)){
+
+							$meeting = $row['meeting'];
+							$meeting_date = $row['meeting_date'];
+						}
+
+					}
+				 ?>
+
 				<div class="form-group">
-				    <!-- <label for="exampleFormControlTextarea1">Example textarea</label> -->
-				    <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="New Note" rows="3" name="note"><?php echo $note; ?></textarea>
+				    <label for="exampleFormControlTextarea1">Appointment</label>
+				    <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="New Meeting" rows="3" name="meeting"><?php echo $meeting; ?></textarea>
 				</div>
-				<button type="submit" class="btn btn-dark" name="update">Submit</button>
+				<div class="form-group">
+				    <label >Appointment Time</label>
+				    <input type="text" class="form-control clockpicker" name="meeting_date" value="<?php echo $meeting_date; ?>">
+				    <span class="input-group-addon">
+				        <span class="glyphicon glyphicon-time"></span>
+				    </span>
+				</div>
+				<button type="submit" class="btn btn-dark"  name="update">Update</button>
 			</form>
 		</div> 
 	</section>
+	
 	
 	</section>
 </body>
 <script type="text/javascript" src="../jquery-3.4.1.min.js"></script>
 <script type="text/javascript" src="../bootstrapv4/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<!-- ClockPicker script -->
+<!-- <script type="text/javascript" src="../clockpicker-gh-pages/dist/bootstrap-clockpicker.min.js"></script> -->
 <script type="text/javascript" src="../scripts/script.js"></script>
+<script type="text/javascript">
+$('.clockpicker').flatpickr({
+	enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    minDate: "today"
+});
+</script>
 
 </html>

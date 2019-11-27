@@ -72,13 +72,7 @@
 						</div>	
 					</a>
 				</div>
-				<div class="red col-lg-3 col-md-6 col-sm-12 col-xs-12">
-					<a href="project/gallery.php?link=gallery">
-						<div class="project ">
-							<p>A <br> Simple Gallery App</p>
-						</div>
-					</a>	
-				</div>
+				
 			</div>
 		</div>
 	</section>
