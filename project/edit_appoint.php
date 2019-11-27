@@ -197,6 +197,7 @@
 						}
 					} 
 			?>
+
 			<form class="container-fluid" method="post" enctype="multipart/form-data">
 				<?php 
 					if(isset($_SESSION['alert-success'])){
@@ -208,6 +209,7 @@
 					}
 				 ?>
 				<?php 
+					$user_id = $_SESSION['id'];
 					if(isset($_GET['a_id'])){
 						$id = $_GET['a_id'];
 
@@ -216,12 +218,15 @@
 
 						confirmQuery($update_query);
 						while($row = mysqli_fetch_assoc($update_query)){
-
+							$the_user_id = $row['user_id'];
 							$meeting = $row['meeting'];
 							$meeting_date = $row['meeting_date'];
 						}
 
 					}
+					if($user_id != $the_user_id) {
+						echo "YOU ARE NOT THE OWNER OF THIS APPOINTMENT";
+					} else {
 				 ?>
 
 				<div class="form-group">
@@ -236,6 +241,7 @@
 				    </span>
 				</div>
 				<button type="submit" class="btn btn-dark"  name="update">Update</button>
+			<?php } ?>
 			</form>
 		</div> 
 	</section>

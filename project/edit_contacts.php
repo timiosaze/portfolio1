@@ -25,6 +25,9 @@
  ?>
 <?php 
 	if(isset($_POST['update_contact'])){
+		if(empty(trim($_POST['contact_name'])) || empty(trim($_POST['contact_number']))){
+			$_SESSION['alert-danger'] ="Contact fields must be filled";
+		} else {
 		$id = $_GET['c_id'];
 		$contact_name = escape($_POST['contact_name']);
 		$contact_number = escape($_POST['contact_number']);
@@ -47,6 +50,7 @@
 		redirect("contacts.php");
 		exit();
 	}
+}
 
  ?>
 <!DOCTYPE html>
@@ -189,16 +193,31 @@
 		</div>
 		<div class="post">
 			<form class="container-fluid" method="post">
+			<?php 
+				if(isset($_SESSION['alert-success'])){
+					echo "<div class='alert alert-success' role='alert'>". $_SESSION['alert-success'] . "</div>";
+					unset($_SESSION['alert-success']);
+				} elseif(isset($_SESSION['alert-danger'])){
+					echo "<div class='alert alert-danger' role='alert'>". $_SESSION['alert-danger'] . "</div>";
+					unset($_SESSION['alert-danger']);
+				}
+			 ?>
 			 <?php 
+			 	$user_id = $_SESSION['id'];
 			 	$id = $_GET['c_id'];
 			 	$query = "SELECT * FROM contacts WHERE id = '{$id}'";
 			 	$select_query = mysqli_query($connection, $query);
 
 			 	confirmQuery($select_query);
 			 	while($row = mysqli_fetch_assoc($select_query)){
+			 		$the_user_id = $row['user_id'];
 			 		$contact_name = $row['contact_name'];
 			 		$contact_number = $row['contact_number'];
 			 	}
+
+			 	if($user_id != $the_user_id){
+			 		echo "YOU ARE NOT THE OWNER OF THIS CONTACT";
+			 	} else {
 			  ?>
 			  <div class="form-group">
 			    <label for="contact_name">Name</label>
@@ -209,6 +228,7 @@
 			    <input type="number" class="form-control" id="phonenumber" placeholder="Phone number" name="contact_number" min="11" value="<?php echo $contact_number; ?>">
 			  </div>
 			  <button type="submit" class="btn btn-dark" name="update_contact">Submit</button>
+			<?php } ?>
 			</form>
 		</div> 
 	</section>

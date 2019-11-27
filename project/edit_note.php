@@ -187,9 +187,14 @@
 					$select_all_query = mysqli_query($connection, $query);
 
 					while($row = mysqli_fetch_assoc($select_all_query)){
+						$the_user_id = $row['user_id'];
 						$note = $row['note'];
 						$updated_at = $row['updated_at'];
 					}
+
+					if($user_id != $the_user_id){
+						echo "YOU ARE NOT THE OWNER OF THIS NOTE";
+					} else {
 			?>
 			<form  method="post" class="container-fluid" enctype="multipart/form-data">
 				<?php 
@@ -207,6 +212,7 @@
 				</div>
 				<button type="submit" class="btn btn-dark" name="update">Submit</button>
 			</form>
+		<?php } ?>
 		</div> 
 	</section>
 	
