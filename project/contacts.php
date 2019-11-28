@@ -25,16 +25,36 @@
 ?>
 <?php 
 if(isset($_GET['del_contact_id'])){
+
+	$user_id = $_SESSION['id'];
 	$id = $_GET['del_contact_id'];
+	$check_query = "SELECT * FROM contacts WHERE id = '$id'";
+	$check_user_query = mysqli_query($connection, $check_query);
 
-	$query = "DELETE FROM contacts WHERE id = '$id'";
-	$delete_query = mysqli_query($connection, $query);
+	confirmQuery($check_user_query);
+	if(mysqli_num_rows($check_user_query) == 0){
+		$_SESSION['alert-danger'] = "Contact does not exist";
+		redirect("contacts.php");
+		exit();
+	} else {
+		while($row = mysqli_fetch_assoc($check_user_query)){
+			$the_user_id = $row['user_id'];
+		}
+	}
+	if($the_user_id != $user_id){
+		$_SESSION['alert-danger'] = "Contact does not belong to YOU";
+		redirect("contacts.php");
+		exit();
+	} else {
+		$query = "DELETE FROM contacts WHERE id = '$id'";
+		$delete_query = mysqli_query($connection, $query);
 
-	if($delete_query){
-		$_SESSION['alert-success'] = "Contact was successfully deleted";
-	}else {
-		$_SESSION['alert-danger'] ="Contact was not deleted";
+		if($delete_query){
+			$_SESSION['alert-success'] = "Contact was successfully deleted";
+		}else {
+			$_SESSION['alert-danger'] ="Contact was not deleted";
 
+		}
 	}
 } 
 ?>

@@ -25,14 +25,35 @@
 ?>
 <?php 
 		if(isset($_GET['del_id'])){
-			$id = $_GET['del_id'];
-			$query = "DELETE FROM notes WHERE id = {$id}";
-			$deletequery = mysqli_query($connection, $query);
 
-			if($deletequery){
-				$_SESSION['alert-success'] = "Note was successfully deleted";
-			} elseif(!$deletequery) {
-				$_SESSION['alert-danger'] = "Note was not deleted";
+			$user_id = $_SESSION['id'];
+			$id = $_GET['del_id'];
+			$check_query = "SELECT * FROM notes WHERE id = '$id'";
+			$check_user_query = mysqli_query($connection, $check_query);
+			confirmQuery($check_user_query);
+			
+			if(mysqli_num_rows($check_user_query)==0){
+				$_SESSION['alert-danger'] = "Note does not exist";
+				redirect("notes.php");
+				exit();
+			} else {
+				while($row = mysqli_fetch_assoc($check_user_query)){
+					$the_user_id = $row['user_id'];
+				}
+			}
+			if($the_user_id != $user_id){
+				$_SESSION['alert-danger']="Note does not belong to YOU";
+				redirect("notes.php");
+				exit();
+			} else {
+				$query = "DELETE FROM notes WHERE id = {$id}";
+				$deletequery = mysqli_query($connection, $query);
+
+				if($deletequery){
+					$_SESSION['alert-success'] = "Note was successfully deleted";
+				} elseif(!$deletequery) {
+					$_SESSION['alert-danger'] = "Note was not deleted";
+				}
 			}
 		}
 	 ?>

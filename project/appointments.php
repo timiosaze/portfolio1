@@ -19,20 +19,36 @@
 ?>
 <?php 
 	if(isset($_GET['del_id'])){
+		$user_id = $_SESSION['id'];
 		$id = $_GET['del_id'];
-		$query = "DELETE FROM meetings WHERE id = '$id' LIMIT 1";
-		$delete_query = mysqli_query($connection, $query);
-		confirmQuery($delete_query);
-		if($delete_query){
-			$_SESSION['alert-success'] = "Meeting successfully deleted";
+
+		$check_query = "SELECT user_id FROM meetings WHERE id = '$id'";
+		$check_user_query = mysqli_query($connection, $check_query);
+		confirmQuery($check_user_query);
+		$the_user_id = mysqli_fetch_array($check_user_query)[0];
+
+		if(mysqli_num_rows($check_user_query) == 0){
+			$_SESSION['alert-danger'] = "Meeting does not exist";
+			redirect("appointments.php");
+			exit();
+		} elseif($the_user_id != $user_id) {
+			$_SESSION['alert-danger'] = "Meeting does not belong to YOU";
 			redirect("appointments.php");
 			exit();
 		} else {
-			$_SESSION['alert-danger'] = "Meeting not deleted";
-			redirect("appointments.php");
-			exit();
+			$query = "DELETE FROM meetings WHERE id = '$id' LIMIT 1";
+			$delete_query = mysqli_query($connection, $query);
+			confirmQuery($delete_query);
+			if($delete_query){
+				$_SESSION['alert-success'] = "Meeting successfully deleted";
+				redirect("appointments.php");
+				exit();
+			} else {
+				$_SESSION['alert-danger'] = "Meeting not deleted";
+				redirect("appointments.php");
+				exit();
+			}
 		}
-
 	}	
  ?>
 <!DOCTYPE html>
