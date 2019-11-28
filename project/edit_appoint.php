@@ -1,22 +1,9 @@
 <?php include('../includes/config.php'); ?>
 <?php include('../includes/functions.php'); ?>
 <?php session_start(); ?>
-<?php 
-	if(isset($_SESSION['link'])){
+<?php include('../includes/check_link.php'); ?>
+<?php include('../includes/check_user_logged_in.php'); ?>
 
-	} elseif (isset($_GET['link'])){
-		$_SESSION['link'] = $_GET['link'];
-	} else {
-		redirect("../index.php");
-		exit();
-	}
- ?>
-<?php if(isset($_SESSION['username'])){
-
-		} else {
-			redirect("../auth/login.php");
-		}
-?>
 
 <!DOCTYPE html>
 <html>
@@ -25,143 +12,11 @@
 	<link rel="stylesheet" type="text/css" href="../bootstrapv4/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="../fonts/css/all.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-	<!-- <link rel="stylesheet" type="text/css" href="../clockpicker-gh-pages/dist/bootstrap-clockpicker.min.css"> -->
 	<link rel="stylesheet" type="text/css" href="../styles/app.css">
-	<!-- <style type="text/css">
-		.header {
-			width: 100%;
-			max-width: 500px;
-			min-width: 300px;
-			margin: 30px auto;
-			background-color: #fff;
-		}
-		.header .element {
-			width: inherit;
-			border-bottom: 1px solid #f1f1f1;
-			border-left: 2px solid #3828e0;
-			padding: 10px;
-		}
-		.header .element-group {
-			width:inherit;
-		}
-		.header .element .time {
-			font-size: 0.85em;
-			color: #3828e0;
-			font-weight: 300;
-		}
-		.header .element:hover {
-			background-color: #FDFEF3;
-			cursor: pointer;
-		}
-		.header .element:hover .actions {
-			visibility: visible;
-		}
-		.header .header-topic {
-			width: inherit;
-			height: 30px;
-			background-color: #000;
-			/*margin-bottom: 30px;*/
-			/*border-bottom: 1px solid black;*/
-		}
-		.header-topic p {
-			/*padding: px;*/
-			line-height: 30px;
-			font-size: 15px;
-			color:#fff;
-		}
-		.header .post {
-			padding: 30px 0px;
-			background-color: #fff;
-
-		}
-		.element-group .actions {
-			display: none;
-		}
-		.editForm, .deleteForm {
-			display: inline-block !important;
-		}
-		.element-group .inside-container {
-			height: 40px;
-			background-color: rgba(0,0,0,0.4);
-			border: 1px solid black;
-		}
-		.col form {
-			text-align: center;
-			line-height: 40px;
-			font-size: 1.3em;
-			font-family: 'Open Sans';
-			font-style: normal;
-			font-weight: 600;
-		}
-		.contact_name, .contact_number {
-			text-align: center;
-			line-height: 25px;
-			height: 25px;
-			font-size: 1.15em;
-			font-family: 'Open Sans';
-			font-style: normal;
-		}
-		.contact_name {
-			font-weight: 300;
-			color:#3828e0;
-		}
-		.contact_number {
-			font-weight: 600;
-		}
-		.col .edit-form a {
-			color: #3828e0;
-
-		}
-		.col .delete-form a {
-			color: #db2e1f;
-		}
-		.appoint_time, .appoint_title {
-			padding-top: 10px;
-			text-align: center;
-		}
-		.appoint_time {
-			font-weight: 700;
-			color: #3828e0;
-		}
-	</style> -->
 </head>
 <body>
-	<nav class="navbar navbar-expand-lg navbar-light bg-white">
-	 <div class="container">
-	  <a class="navbar-brand" href="#">PORTFOLIO</a>
-	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-	    <span class="navbar-toggler-icon"></span>
-	  </button>
-	  <div class="collapse navbar-collapse" id="navbarNav">
-	    <ul class="navbar-nav ml-auto">
-	      <?php if(isset($_SESSION['username'])): ?>
-	  	  <li class="nav-item dropdown">
-	        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-	          <?php echo ucfirst($_SESSION['username']); ?>
-	        </a>
-	        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-	          <a class="dropdown-item" href="../auth/logout.php">Logout</a>
-	        </div>
-	      </li>
-
-	  	<?php else: ?>
-		      <li class="nav-item active">
-		        <a class="nav-link" href="login.php">Login <span class="sr-only">(current)</span></a>
-		      </li>
-		      <li class="nav-item">
-		        <a class="nav-link" href="register.php">Register</a>
-		      </li>
-		      <!-- <li class="nav-item">
-		        <a class="nav-link" href="#">Pricing</a>
-		      </li>
-		      <li class="nav-item">
-		        <a class="nav-link disabled" href="#">Disabled</a>
-		      </li> -->
-		<?php endif; ?>
-	    </ul>
-	  </div>
-	  </div>
-	</nav>
+	<?php include("../includes/navbar.php"); ?>
+	
 	<section class="container">
 		
 	<section class="header">
@@ -169,11 +24,18 @@
 			<p>New Appointment</p>
 		</div>
 		<div class="post">
-			<?php if(isset($_POST['update'])){
+			<?php 
+					if(isset($_GET['a_id'])){
+						$id = escape($_GET['a_id']);
+					} else {
+						redirect("appointments.php");
+						exit();
+					}
+					if(isset($_POST['update'])){
+						
 						if(empty(trim($_POST['meeting'])) || empty(trim($_POST['meeting_date']))){
 							$_SESSION['alert-danger'] = "Not saved, fields are not filled";
 						} else {
-							$id = $_GET['a_id'];
 							$meeting = escape($_POST['meeting']);
 							$meeting_date = escape($_POST['meeting_date']);
 

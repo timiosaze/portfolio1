@@ -1,34 +1,19 @@
 <?php include('../includes/config.php'); ?>
 <?php include('../includes/functions.php'); ?>
 <?php session_start(); ?>
-<?php 
-	if(isset($_SESSION['link'])){
-
-	} elseif (isset($_GET['link'])){
-		$_SESSION['link'] = $_GET['link'];
+<?php include('../includes/check_link.php'); ?>
+<?php include('../includes/check_user_logged_in.php'); ?>
+<?php
+	if(isset($_GET['c_id'])){
+		$id = escape($_GET['c_id']);
 	} else {
-		redirect("../index.php");
-		exit();
-	}
- ?>
-<?php if(isset($_SESSION['username'])){
-
-		} else {
-			redirect("../auth/login.php");
-		}
-?>
-<?php if(isset($_GET['c_id'])){
-
-	 } else {
 	 	redirect("../contacts.php");
-	 }
- ?>
-<?php 
+	 	exit();
+	}
 	if(isset($_POST['update_contact'])){
 		if(empty(trim($_POST['contact_name'])) || empty(trim($_POST['contact_number']))){
 			$_SESSION['alert-danger'] ="Contact fields must be filled";
 		} else {
-		$id = $_GET['c_id'];
 		$contact_name = escape($_POST['contact_name']);
 		$contact_number = escape($_POST['contact_number']);
 
@@ -149,42 +134,8 @@
 	</style>
 </head>
 <body>
-	<nav class="navbar navbar-expand-lg navbar-light bg-white">
-	 <div class="container">
-	  <a class="navbar-brand" href="#">PORTFOLIO</a>
-	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-	    <span class="navbar-toggler-icon"></span>
-	  </button>
-	  <div class="collapse navbar-collapse" id="navbarNav">
-	    <ul class="navbar-nav ml-auto">
-	     <?php if(isset($_SESSION['username'])): ?>
-	  	  <li class="nav-item dropdown">
-	        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-	          <?php echo ucfirst($_SESSION['username']); ?>
-	        </a>
-	        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-	          <a class="dropdown-item" href="../auth/logout.php">Logout</a>
-	        </div>
-	      </li>
-
-	  	<?php else: ?>
-		      <li class="nav-item active">
-		        <a class="nav-link" href="login.php">Login <span class="sr-only">(current)</span></a>
-		      </li>
-		      <li class="nav-item">
-		        <a class="nav-link" href="register.php">Register</a>
-		      </li>
-		      <!-- <li class="nav-item">
-		        <a class="nav-link" href="#">Pricing</a>
-		      </li>
-		      <li class="nav-item">
-		        <a class="nav-link disabled" href="#">Disabled</a>
-		      </li> -->
-		<?php endif; ?>
-	    </ul>
-	  </div>
-	  </div>
-	</nav>
+	<?php include("../includes/navbar.php"); ?>
+	
 	<section class="container">
 		
 	<section class="header">
