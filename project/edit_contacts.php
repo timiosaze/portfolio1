@@ -157,10 +157,13 @@
 			 	$user_id = $_SESSION['id'];
 			 	$id = $_GET['c_id'];
 			 	$query = "SELECT * FROM contacts WHERE id = '{$id}'";
-			 	$select_query = mysqli_query($connection, $query);
+			 	$update_query = mysqli_query($connection, $query);
 
-			 	confirmQuery($select_query);
-			 	while($row = mysqli_fetch_assoc($select_query)){
+			 	if(mysqli_num_rows($update_query) == 0){
+					redirect("contacts.php");
+					exit();
+				}
+			 	while($row = mysqli_fetch_assoc($update_query)){
 			 		$the_user_id = $row['user_id'];
 			 		$contact_name = $row['contact_name'];
 			 		$contact_number = $row['contact_number'];

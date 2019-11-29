@@ -78,7 +78,10 @@
 						$query = "SELECT * FROM meetings WHERE id = '$id' LIMIT 1";
 						$update_query = mysqli_query($connection, $query);
 
-						confirmQuery($update_query);
+						if(mysqli_num_rows($update_query) == 0){
+							redirect("appointments.php");
+							exit();
+						}
 						while($row = mysqli_fetch_assoc($update_query)){
 							$the_user_id = $row['user_id'];
 							$meeting = $row['meeting'];

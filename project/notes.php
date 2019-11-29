@@ -1,9 +1,3 @@
-<?php 
-	$time = microtime();
-	$time = explode(" ", $time);
-	$time = $time[1] + $time[0];
-	$start = $time;
- ?>
 <?php include('../includes/config.php'); ?>
 <?php include('../includes/functions.php'); ?>
 <?php session_start(); ?>
@@ -13,22 +7,18 @@
 		if(isset($_GET['del_id'])){
 
 			$user_id = $_SESSION['id'];
-			$id = $_GET['del_id'];
-			$check_query = "SELECT * FROM notes WHERE id = '$id'";
+			$id = escape($_GET['del_id']);
+			$check_query = "SELECT user_id FROM notes WHERE id = '$id'";
 			$check_user_query = mysqli_query($connection, $check_query);
 			confirmQuery($check_user_query);
+			$the_user_id = mysqli_fetch_array($check_user_query)[0];
 			
 			if(mysqli_num_rows($check_user_query)==0){
 				$_SESSION['alert-danger'] = "Note does not exist";
 				redirect("notes.php");
 				exit();
-			} else {
-				while($row = mysqli_fetch_assoc($check_user_query)){
-					$the_user_id = $row['user_id'];
-				}
-			}
-			if($the_user_id != $user_id){
-				$_SESSION['alert-danger']="Note does not belong to YOU";
+			} elseif($the_user_id != $user_id) {
+				$_SESSION['alert-danger'] = "Meeting does not belong to YOU";
 				redirect("notes.php");
 				exit();
 			} else {
@@ -37,8 +27,12 @@
 
 				if($deletequery){
 					$_SESSION['alert-success'] = "Note was successfully deleted";
+					redirect("notes.php");
+					exit();
 				} elseif(!$deletequery) {
 					$_SESSION['alert-danger'] = "Note was not deleted";
+					redirect("notes.php");
+					exit();
 				}
 			}
 		}
@@ -87,15 +81,7 @@
 		<div class="post">
 
 			<form  method="post" class="container-fluid" enctype="multipart/form-data">
-				<?php 
-					if(isset($_SESSION['alert-success'])){
-						echo "<div class='alert alert-success' role='alert'>". $_SESSION['alert-success'] . "</div>";
-						unset($_SESSION['alert-success']);
-					} elseif(isset($_SESSION['alert-danger'])){
-						echo "<div class='alert alert-danger' role='alert'>". $_SESSION['alert-danger'] . "</div>";
-						unset($_SESSION['alert-danger']);
-					}
-				 ?>
+			 <?php include("../includes/sessions.php"); ?>
 				<div class="form-group">
 				    <!-- <label for="exampleFormControlTextarea1">Example textarea</label> -->
 				    <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="New Note" rows="3" name="note"></textarea>
@@ -201,11 +187,3 @@
 <script type="text/javascript" src="../scripts/script.js"></script>
 
 </html>
-<?php 
-	$time= microtime();
-	$time = explode(" ", $time);
-	$time = $time[1] + $time[0];
-	$finish = $time;
-	$total_time = round(($finish - $start), 4);
-	echo "Page generated in " . $total_time . " seconds";
- ?>

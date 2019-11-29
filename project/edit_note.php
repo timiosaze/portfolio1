@@ -63,10 +63,14 @@
 
 					$user_id = $_SESSION['id'];
 					$query = "SELECT * FROM notes WHERE id = '$the_note_id'";
+					$update_query = mysqli_query($connection, $query);
+					
+					if(mysqli_num_rows($update_query) == 0){
+						redirect("notes.php");
+						exit();
+					}
 
-					$select_all_query = mysqli_query($connection, $query);
-
-					while($row = mysqli_fetch_assoc($select_all_query)){
+					while($row = mysqli_fetch_assoc($update_query)){
 						$the_user_id = $row['user_id'];
 						$note = $row['note'];
 						$updated_at = $row['updated_at'];

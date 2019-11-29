@@ -1,9 +1,3 @@
-<?php 
-	$time = microtime();
-	$time = explode(" ", $time);
-	$time = $time[1] + $time[0];
-	$start = $time;
- ?>
 <?php include('../includes/config.php'); ?>
 <?php include('../includes/functions.php'); ?>
 <?php session_start(); ?>
@@ -13,22 +7,18 @@
 	if(isset($_GET['del_contact_id'])){
 
 		$user_id = $_SESSION['id'];
-		$id = $_GET['del_contact_id'];
-		$check_query = "SELECT * FROM contacts WHERE id = '$id'";
+		$id = escape($_GET['del_contact_id']);
+		$check_query = "SELECT user_id FROM contacts WHERE id = '$id'";
 		$check_user_query = mysqli_query($connection, $check_query);
-
 		confirmQuery($check_user_query);
+		$the_user_id = mysqli_fetch_array($check_user_query)[0];
+
 		if(mysqli_num_rows($check_user_query) == 0){
 			$_SESSION['alert-danger'] = "Contact does not exist";
 			redirect("contacts.php");
 			exit();
-		} else {
-			while($row = mysqli_fetch_assoc($check_user_query)){
-				$the_user_id = $row['user_id'];
-			}
-		}
-		if($the_user_id != $user_id){
-			$_SESSION['alert-danger'] = "Contact does not belong to YOU";
+		} elseif($the_user_id != $user_id) {
+			$_SESSION['alert-danger'] = "Meeting does not belong to YOU";
 			redirect("contacts.php");
 			exit();
 		} else {
@@ -37,8 +27,12 @@
 
 			if($delete_query){
 				$_SESSION['alert-success'] = "Contact was successfully deleted";
+				redirect("contacts.php");
+				exit();
 			}else {
 				$_SESSION['alert-danger'] ="Contact was not deleted";
+				redirect("contacts.php");
+				exit();
 
 			}
 		}
@@ -88,15 +82,7 @@
 		</div>
 		<div class="post">
 			<form class="container-fluid" method="post">
-			 <?php 
-				if(isset($_SESSION['alert-success'])){
-					echo "<div class='alert alert-success' role='alert'>". $_SESSION['alert-success'] . "</div>";
-					unset($_SESSION['alert-success']);
-				} elseif(isset($_SESSION['alert-danger'])){
-					echo "<div class='alert alert-danger' role='alert'>". $_SESSION['alert-danger'] . "</div>";
-					unset($_SESSION['alert-danger']);
-				}
-			 ?>
+			 <?php include("../includes/sessions.php"); ?>
 			  <div class="form-group">
 			    <label for="contact_name">Name</label>
 			    <input type="text" class="form-control" id="contact_name" aria-describedby="emailHelp" name="contact_name" placeholder="Enter name">
@@ -209,11 +195,3 @@
 <script type="text/javascript" src="../scripts/contacts.js"></script>
 
 </html>
-<?php 
-	$time= microtime();
-	$time = explode(" ", $time);
-	$time = $time[1] + $time[0];
-	$finish = $time;
-	$total_time = round(($finish - $start), 4);
-	echo "Page generated in " . $total_time . " seconds";
- ?>
