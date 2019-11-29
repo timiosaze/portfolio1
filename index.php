@@ -1,5 +1,7 @@
 <?php require_once("includes/config.php"); ?>
+<?php include("includes/check_if_file_exists.php") ?>
 <?php session_start(); ?>
+
 <!DOCTYPE html>
 <html>
 <head>
