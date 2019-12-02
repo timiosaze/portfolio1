@@ -4,6 +4,7 @@
 <?php include('../includes/check_link.php'); ?>
 <?php include('../includes/check_user_logged_in.php'); ?>
 <?php 
+	#DELETE ROUTE
 	if(isset($_GET['del_contact_id'])){
 
 		$user_id = $_SESSION['id'];
@@ -39,6 +40,7 @@
 	} 
 ?>
 <?php 
+	#CREATE ROUTE
 	if(isset($_POST['save_contact'])){
 		if(empty(trim($_POST['contact_name'])) || empty($_POST['contact_number'])){
 			$_SESSION['alert-danger'] ="Not saved fields are not filled";
@@ -97,6 +99,7 @@
 	</section>
 	<section class="header">
 		<?php 
+			#CHECK IF THERE ARE ANY CONTACTS OF THE USER
 			$user_id = $_SESSION['id'];
 			$query = "SELECT * FROM contacts WHERE user_id = '$user_id'";
 
@@ -111,6 +114,7 @@
 			<p>NUMBERS(click to edit | delete)</p>
 		</div>
 		<?php 
+			#READ ROUTE WITH MAXIMUM OF 5 PER PAGE
 			//GET THE CURRENT PAGE
 			if(isset($_GET['p'])){
 				$pageno = $_GET['p'];

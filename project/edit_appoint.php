@@ -25,6 +25,7 @@
 		</div>
 		<div class="post">
 			<?php 
+				#UPDATE ROUTE
 					if(isset($_GET['a_id'])){
 						$id = escape($_GET['a_id']);
 					} else {
@@ -70,7 +71,8 @@
 						unset($_SESSION['alert-danger']);
 					}
 				 ?>
-				<?php 
+				<?php
+					#READ MEETING SET BY USER USING THE ID 
 					$user_id = $_SESSION['id'];
 					if(isset($_GET['a_id'])){
 						$id = $_GET['a_id'];
@@ -89,6 +91,7 @@
 						}
 
 					}
+					#CHECK IF THE USER IS THE OWNER OF THE MEETING BY THE USER WHO LOGGED IN
 					if($user_id != $the_user_id) {
 						echo "YOU ARE NOT THE OWNER OF THIS APPOINTMENT";
 					} else {

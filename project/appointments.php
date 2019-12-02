@@ -4,6 +4,7 @@
 <?php include('../includes/check_link.php'); ?>
 <?php include('../includes/check_user_logged_in.php'); ?>
 <?php 
+	#DELETE ROUTE
 	if(isset($_GET['del_id'])){
 		$user_id = $_SESSION['id'];
 		$id = escape($_GET['del_id']);
@@ -56,7 +57,9 @@
 			<p>New Appointment</p>
 		</div>
 		<div class="post">
-			<?php if(isset($_POST['submit'])){
+			<?php
+			#CREATE ROUTE
+			if(isset($_POST['submit'])){
 						if(empty(trim($_POST['meeting'])) || empty(trim($_POST['meeting_date']))){
 							$_SESSION['alert-danger'] = "Not saved, fields are not filled";
 						} else {
@@ -115,10 +118,11 @@
 			$total_row = mysqli_fetch_array($pages_result)[0];
 			$total_pages = ceil($total_row/$no_of_records_per_page);
 
-
+			#READ ROUTE WITH A MAXIMUM OF 5 PER PAGE
 			$c_query ="SELECT * FROM meetings WHERE user_id = '$user_id' ORDER BY meeting_date DESC LIMIT $offset, $no_of_records_per_page";
 			$check_row = mysqli_query($connection, $c_query);
-
+			
+			#CHECK IF THERE ARE ANY MEETINGS SET BY THE USER USING THE SAME QUERY TO DISPLAY THE MEETINGS SET
 			confirmQuery($check_row);
 			if(mysqli_num_rows($check_row) == 0){
 				echo "No meetings set";
@@ -128,6 +132,7 @@
 			<p>APPOINTMENTS(click to edit or delete)</p>
 		</div>
 		<?php 
+			#
 			$select_row = mysqli_query($connection, $c_query);
 
 			confirmQuery($select_row);

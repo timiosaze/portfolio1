@@ -4,6 +4,7 @@
 <?php include('../includes/check_link.php'); ?>
 <?php include('../includes/check_user_logged_in.php'); ?>
 <?php
+	#UPDATE ROUTE
 	if(isset($_GET['c_id'])){
 		$id = escape($_GET['c_id']);
 	} else {
@@ -154,6 +155,7 @@
 				}
 			 ?>
 			 <?php 
+			 	#READ THE CONTACT SET BY THE USER USING THE ID 
 			 	$user_id = $_SESSION['id'];
 			 	$id = $_GET['c_id'];
 			 	$query = "SELECT * FROM contacts WHERE id = '{$id}'";
@@ -169,6 +171,7 @@
 			 		$contact_number = $row['contact_number'];
 			 	}
 
+			 	#CHECK IF THE USER LOGGED IN IS THE OWNER OF THE CONTACT
 			 	if($user_id != $the_user_id){
 			 		echo "YOU ARE NOT THE OWNER OF THIS CONTACT";
 			 	} else {

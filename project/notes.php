@@ -4,6 +4,7 @@
 <?php include('../includes/check_link.php'); ?>
 <?php include('../includes/check_user_logged_in.php'); ?>
 <?php 
+		#DELETE ROUTE
 		if(isset($_GET['del_id'])){
 
 			$user_id = $_SESSION['id'];
@@ -48,6 +49,7 @@
 </head>
 <body>
 	<?php 
+		#CREATE ROUTE
 		if(isset($_POST['submit'])){
 			if(empty(trim($_POST['note']))){
 				$_SESSION['alert-danger'] = "Not saved field are not filled";
@@ -92,6 +94,7 @@
 	</section>
 	<section class="header">
 		<?php 
+			#CHECK IF ANY NOTE EXISTS OF THE USER
 			$user_id = $_SESSION['id'];
 			$c_query ="SELECT * FROM notes WHERE user_id = '$user_id'";
 			$check_query = mysqli_query($connection, $c_query);
@@ -105,6 +108,7 @@
 			<p>NOTES(click to edit or delete)</p>
 		</div>
 		<?php 
+				#READ ROUTE WITH MAXIMUM OF 5 PER PAGE
 						$user_id = $_SESSION['id'];
 					// GET CURRENT PAGE number
 					  if(isset($_GET['p'])){

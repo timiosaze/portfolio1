@@ -13,6 +13,7 @@
 </head>
 <body>
 	<?php 
+		#UPDATE ROUTE
 		if(isset($_GET['n_id'])){
 			$the_note_id = escape($_GET['n_id']);
 		} else {
@@ -57,6 +58,7 @@
 		<div class="post">
 
 			<?php 
+					#READ NOTE OF THE USER USING THE ID
 					if(isset($_GET['n_id'])){
 						$the_note_id = escape($_GET['n_id']);
 					}
@@ -76,6 +78,7 @@
 						$updated_at = $row['updated_at'];
 					}
 
+					#CHECK IF THE USER LOGGED IN IS THE OWNER OF THE NOTE
 					if($user_id != $the_user_id){
 						echo "YOU ARE NOT THE OWNER OF THIS NOTE";
 					} else {
